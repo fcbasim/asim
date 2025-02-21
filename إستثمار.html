@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="حاسبة الاستثمار تحسب العائد المتوقع على استثمارك بناءً على المبلغ الأصلي، نسبة الفائدة الشهرية، ومدة الاستثمار.">
+<title>حاسبة الاستثمار</title>
+<!-- تغيير رابط Favicon ليكون نفس رابط الشعار -->
+<link rel="icon" type="image/png" href="https://lh3.googleusercontent.com/d/1WL_ngVmCVAvYiL23nHfU58kvbEED3z4p=w500">
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<style>
+body {
+background-color: #121212;
+color: #e0e0e0;
+font-family: 'Cairo', sans-serif;
+text-align: center;
+margin: 0;
+padding: 20px;
+line-height: 1.6;
+}
+.container {
+max-width: 800px;
+margin: auto;
+padding: 25px;
+border-radius: 20px;
+background: linear-gradient(145deg, #1e1e1e, #121212);
+box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
+position: relative;
+overflow: hidden;
+}
+.container::before {
+content: '';
+position: absolute;
+top: -50%;
+left: -50%;
+width: 200%;
+height: 200%;
+background: radial-gradient(circle, rgba(0, 123, 255, 0.1), transparent 70%);
+animation: rotateBackground 20s linear infinite;
+z-index: -1;
+}
+@keyframes rotateBackground {
+0% { transform: rotate(0deg); }
+100% { transform: rotate(360deg); }
+}
+.logo-container {
+display: flex;
+justify-content: center;
+margin-bottom: 25px;
+}
+.logo {
+width: 150px;
+height: 150px;
+border-radius: 50%;
+border: 4px solid transparent;
+background: linear-gradient(135deg, #007bff, #00bfff) border-box;
+box-shadow: 0 4px 15px rgba(0, 123, 255, 0.2);
+overflow: hidden;
+transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+.logo img {
+width: 100%;
+height: 100%;
+object-fit: cover;
+border-radius: 50%;
+}
+.logo:hover {
+transform: scale(1.05);
+box-shadow: 0 6px 20px rgba(0, 123, 255, 0.3);
+}
+h2 {
+color: #007bff;
+margin-bottom: 25px;
+font-size: 24px;
+}
+label {
+font-weight: bold;
+display: block;
+margin-bottom: 8px;
+color: #e0e0e0;
+}
+table {
+width: 100%;
+border-collapse: collapse;
+margin-top: 25px;
+background-color: #1e1e1e;
+border-radius: 12px;
+overflow: hidden;
+box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+}
+th, td {
+border: 1px solid #333;
+padding: 12px;
+text-align: center;
+color: #e0e0e0;
+}
+th {
+background-color: #007bff;
+color: white;
+}
+td {
+background-color: #2c2c2c;
+}
+input, select, button {
+width: 100%;
+max-width: 300px;
+padding: 12px;
+margin: 10px auto;
+border: 1px solid #333;
+border-radius: 8px;
+font-size: 16px;
+box-sizing: border-box;
+display: block;
+transition: border-color 0.3s ease, box-shadow 0.3s ease, transform 0.3s ease;
+background-color: #1e1e1e;
+color: #e0e0e0;
+text-align: center;
+}
+input:focus, select:focus {
+border-color: #007bff;
+box-shadow: 0 0 8px rgba(0, 123, 255, 0.2);
+outline: none;
+transform: scale(1.02);
+}
+select {
+background-color: #1e1e1e;
+color: #e0e0e0;
+text-align: center;
+}
+button {
+background-color: #007bff;
+color: white;
+cursor: pointer;
+transition: background-color 0.3s ease, transform 0.3s ease, box-shadow 0.3s ease;
+border: none;
+}
+button:hover {
+background-color: #0056b3;
+transform: translateY(-2px);
+box-shadow: 0 4px 8px rgba(0, 123, 255, 0.3);
+}
+.chart-container {
+margin-top: 30px;
+position: relative;
+height: 300px;
+}
+.million-goal {
+margin-top: 30px;
+padding: 20px;
+background: linear-gradient(135deg, #007bff, #00bfff);
+border-radius: 12px;
+color: white;
+font-size: 18px;
+box-shadow: 0 4px 15px rgba(0, 123, 255, 0.2);
+animation: fadeIn 1s ease-in-out;
+display: none;
+}
+.million-goal span {
+font-weight: bold;
+color: #ffdd57;
+}
+@keyframes fadeIn {
+from { opacity: 0; }
+to { opacity: 1; }
+}
+</style>
+</head>
+<body>
+<div class="container">
+<!-- تحسينات على الشعار -->
+<div class="logo-container">
+<div class="logo">
+<img src="https://lh3.googleusercontent.com/d/1WL_ngVmCVAvYiL23nHfU58kvbEED3z4p=w500" alt="Asim Invest Logo">
+</div>
+</div>
+
+<h2>💰 حاسبة الاستثمار 📈</h2>
+
+<label for="principal">💵 المبلغ الأصلي:</label>
+<input type="number" id="principal" value="1000" placeholder="ادخل المبلغ" min="0">
+
+<label for="rate">📊 نسبة الفائدة الشهرية (%):</label>
+<input type="number" id="rate" value="5" placeholder="ادخل النسبة" min="0">
+
+<label for="time_period">⏳ المدة:</label>
+<input type="number" id="time_period" value="12" placeholder="ادخل المدة" min="0">
+
+<label for="time_unit">📅 الوحدة الزمنية:</label>
+<select id="time_unit">
+<option value="months">أشهر</option>
+<option value="years">سنوات</option>
+</select>
+
+<button onclick="calculate()">احسب العائد</button>
+
+<table id="resultTable">
+<thead>
+<tr>
+<th>الترتيب</th>
+<th>رصيد بداية الفترة</th>
+<th>الفائدة</th>
+<th>رصيد نهاية الفترة</th>
+</tr>
+</thead>
+<tbody>
+</tbody>
+</table>
+
+<div class="chart-container">
+<canvas id="investmentChart"></canvas>
+</div>
+
+<!-- زر لحساب المدة للوصول إلى المليون -->
+<button id="calculateMillionButton" onclick="calculateTimeToMillion()" style="display: none; margin-top: 20px;">
+احسب المدة للوصول إلى مليون
+</button>
+
+<!-- خانة المدة للوصول إلى المليون -->
+<div id="millionGoal" class="million-goal">
+⏳ المدة اللازمة للوصول إلى <span>1,000,000 💰</span>: <span id="timeToMillion"></span>
+</div>
+
+<div id="result"></div>
+</div>
+
+<script>
+let myChart;
+let finalAmount = 0;
+
+function calculate() {
+const principal = parseFloat(document.getElementById("principal").value);
+const rate = parseFloat(document.getElementById("rate").value) / 100;
+const time_period = parseInt(document.getElementById("time_period").value);
+const time_unit = document.getElementById("time_unit").value;
+const months = (time_unit === "years") ? time_period * 12 : time_period;
+
+if (isNaN(principal) || isNaN(rate) || isNaN(time_period) || principal < 0 || rate < 0 || time_period < 1) {
+alert("الرجاء إدخال قيم صحيحة!");
+return;
+}
+
+const tableBody = document.getElementById("resultTable").getElementsByTagName("tbody")[0];
+tableBody.innerHTML = "";
+
+let currentBalance = principal;
+const labels = [];
+const data = [];
+let periodLabel = "";
+
+if (time_unit === "years") {
+periodLabel = "السنة";
+for (let i = 1; i <= time_period; i++) {
+let yearStartBalance = currentBalance;
+let yearInterest = 0;
+
+for (let j = 1; j <= 12; j++) {
+const interest = currentBalance * rate;
+currentBalance += interest;
+yearInterest += interest;
+}
+
+labels.push(`السنة ${i}`);
+data.push(currentBalance);
+
+const newRow = tableBody.insertRow();
+newRow.insertCell(0).innerHTML = i;
+newRow.insertCell(1).innerHTML = formatNumber(yearStartBalance);
+newRow.insertCell(2).innerHTML = formatNumber(yearInterest);
+newRow.insertCell(3).innerHTML = formatNumber(currentBalance);
+}
+} else {
+periodLabel = "الشهر";
+for (let i = 1; i <= months; i++) {
+const interest = currentBalance * rate;
+currentBalance += interest;
+
+labels.push(`الشهر ${i}`);
+data.push(currentBalance);
+
+const newRow = tableBody.insertRow();
+newRow.insertCell(0).innerHTML = i;
+newRow.insertCell(1).innerHTML = formatNumber(currentBalance - interest);
+newRow.insertCell(2).innerHTML = formatNumber(interest);
+newRow.insertCell(3).innerHTML = formatNumber(currentBalance);
+}
+}
+
+finalAmount = currentBalance;
+
+document.getElementById("result").innerHTML =
+`إجمالي المبلغ بعد ${time_period} ${time_unit === "years" ? "سنوات" : "أشهر"}: ${formatNumber(finalAmount)}<br>
+إجمالي الربح: ${formatNumber(finalAmount - principal)}`;
+
+updateChart(labels, data);
+
+document.getElementById("calculateMillionButton").style.display = "block";
+document.getElementById("millionGoal").style.display = "none";
+}
+
+function calculateTimeToMillion() {
+const targetAmount = 1000000;
+const rate = parseFloat(document.getElementById("rate").value) / 100;
+let currentBalance = finalAmount;
+let months = 0;
+
+if (currentBalance >= targetAmount) {
+document.getElementById("timeToMillion").textContent = "لقد وصلت بالفعل إلى المليون! 🎉";
+document.getElementById("millionGoal").style.display = "block";
+return;
+}
+
+while (currentBalance < targetAmount) {
+currentBalance += currentBalance * rate;
+months++;
+}
+
+const years = Math.floor(months / 12);
+const remainingMonths = months % 12;
+
+let timeText = "";
+if (years > 0) {
+timeText += `${years} سنة${years > 1 ? "" : ""} `;
+}
+if (remainingMonths > 0) {
+timeText += `${remainingMonths} شهر${remainingMonths > 1 ? "" : ""}`;
+}
+
+document.getElementById("timeToMillion").textContent = timeText;
+document.getElementById("millionGoal").style.display = "block";
+}
+
+function updateChart(labels, data) {
+const ctx = document.getElementById('investmentChart').getContext('2d');
+if (myChart) myChart.destroy();
+
+myChart = new Chart(ctx, {
+type: 'line',
+data: {
+labels: labels,
+datasets: [{
+label: 'رصيد الاستثمار',
+data: data,
+borderColor: '#007bff',
+backgroundColor: 'rgba(0, 123, 255, 0.1)',
+fill: true,
+}]
+},
+options: {
+responsive: true,
+scales: {
+y: {
+beginAtZero: true,
+title: {
+display: true,
+text: 'الرصيد'
+}
+},
+x: {
+title: {
+display: true,
+text: 'الفترة الزمنية'
+}
+}
+}
+}
+});
+}
+
+function formatNumber(number) {
+return number.toLocaleString('en-US');
+}
+</script>
+</body>
+</html>
